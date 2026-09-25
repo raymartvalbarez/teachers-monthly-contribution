@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teachers' Monthly Contribution – Bago National High School</title>
+<meta name="description" content="Teachers' monthly contribution fund – payment status, fund summary and expenses – Bago National High School">
+<style>
+  :root{--bg:#f3f6fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--brand:#1e5bb8;--brand2:#f5b301;--ok:#15803d;--okbg:#dcfce7;--warn:#b45309;--warnbg:#fef3c7;--bad:#b91c1c}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  header{background:linear-gradient(135deg,var(--brand),#2f7de1);color:#fff;padding:28px 18px 60px;text-align:center}
+  header .school{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+  header h1{margin:6px 0 4px;font-size:1.5rem}
+  header p{margin:0;opacity:.9;font-size:.95rem}
+  main{max-width:560px;margin:-40px auto 30px;padding:0 14px}
+  .card{background:var(--card);border-radius:16px;box-shadow:0 6px 20px rgba(30,60,120,.10);padding:18px;margin-bottom:14px}
+  .card h2{font-size:1.05rem;margin:0 0 12px}
+  label{font-weight:600;display:block;margin-bottom:8px}
+  input[type=search],select{width:100%;font-size:1.05rem;padding:13px 14px;border:2px solid #d5deea;border-radius:12px;outline:none;background:#fff;color:var(--ink)}
+  input[type=search]:focus,select:focus{border-color:var(--brand)}
+  select{padding:10px 12px;font-size:1rem;width:auto}
+  .hint{color:var(--muted);font-size:.85rem;margin-top:8px}
+  .summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat{background:#f7f9fd;border-radius:12px;padding:12px;text-align:center}
+  .stat b{display:block;font-size:1.3rem;color:var(--brand);white-space:nowrap}
+  .stat span{font-size:.8rem;color:var(--muted)}
+  .stat.big{grid-column:1/-1;background:#eaf2ff}
+  .stat.big b{font-size:1.7rem}
+  .stat.neg b{color:var(--bad)}
+  .tcard{border:1px solid #e6ecf5;border-radius:12px;margin-top:10px;overflow:hidden}
+  .tcard .th{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#f7f9fd}
+  .tcard .nm{font-weight:700}
+  .tcard .tot{font-size:.85rem;color:var(--muted);text-align:right;white-space:nowrap}
+  .tcard .tot b{color:var(--ink)}
+  .mrow{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-top:1px solid #eef2f8;font-size:.95rem}
+  .mrow.future{color:var(--muted)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border:1px solid #e6ecf5;border-radius:12px;margin-top:8px}
+  .row .nm{font-weight:600}
+  .badge{display:inline-block;font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--okbg);color:var(--ok);white-space:nowrap}
+  .badge.no{background:var(--warnbg);color:var(--warn)}
+  .badge.soon{background:#eef1f5;color:var(--muted)}
+  .empty{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:14px;margin-top:10px;font-size:.93rem}
+  .toggle{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 14px;background:var(--brand);color:#fff;cursor:pointer}
+  button.secondary{background:#e8eef9;color:var(--brand)}
+  .mbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 4px}
+  .counts{font-size:.9rem;color:var(--muted)}
+  .counts b{color:var(--ink)}
+  .grp{font-weight:700;font-size:.9rem;margin:14px 0 2px}
+  .grp.ok{color:var(--ok)} .grp.no{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{padding:9px 6px;border-bottom:1px solid #eef2f8;text-align:left;vertical-align:top}
+  th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  td.num,th.num{text-align:right;white-space:nowrap}
+  td.dt{white-space:nowrap;color:var(--muted)}
+  tfoot td{font-weight:700;border-bottom:0}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px 14px 30px}
+  .note{font-size:.75rem;opacity:.8;font-style:italic}
+  .live{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#16a34a;margin-right:4px;vertical-align:.05em}
+  .ico{display:inline-block;width:1em;height:1em;vertical-align:-.15em}
+  #status{margin-bottom:6px}
+  .yellow{height:4px;background:var(--brand2);border-radius:4px;width:60px;margin:10px auto 0}
+  .peso{display:inline-block;width:.62em;height:.72em;margin-right:.04em;vertical-align:baseline;overflow:visible}
+</style>
+</head>
+<body>
+<header>
+  <div class="school">Bago National High School</div>
+  <h1>Teachers' Monthly Contribution</h1>
+  <p><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>100 per month · check your payments and the fund balance</p>
+  <div class="yellow"></div>
+</header>
+<main>
+  <div class="card">
+    <label for="q">Type your name</label>
+    <input id="q" type="search" placeholder="e.g. Caldeo or Donna" autocomplete="off">
+    <div class="hint">Search by first name or surname to see your monthly payments.</div>
+    <div id="results"></div>
+  </div>
+  <div class="card">
+    <h2>Fund summary</h2>
+    <div class="summary">
+      <div class="stat"><b id="sDues"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>0</b><span>Monthly dues collected</span></div>
+      <div class="stat"><b id="sSav"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>0</b><span>Additional savings</span></div>
+      <div class="stat"><b id="sInc"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>0</b><span>Total fund income</span></div>
+      <div class="stat"><b id="sExp"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>0</b><span>Total expenses</span></div>
+      <div class="stat big" id="balBox"><b id="sBal"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>0</b><span>Current balance</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="toggle"><strong>Who has paid (by month)</strong><button id="tog" class="secondary">Show list</button></div>
+    <div id="allWrap" hidden>
+      <div class="mbar"><label for="month" style="margin:0">Month</label><select id="month"></select></div>
+      <div class="counts" id="mCounts"></div>
+      <div id="all"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Expenses</h2>
+    <div id="exp"></div>
+  </div>
+</main>
+<footer><div id="status">Last updated: <b>Sep 25, 2026</b></div>Paid but not marked yet? Please message the fund treasurer so the record can be updated.</footer>
+<script>
+/* ===== CONFIG ===== */
+const SHEET_ID = "1Wra7x6_QotWRg4azHE70QnovT8BWS6tnr7NMPBPWylo";
+const FUND_TAB = {name: "Monthly Fund", gid: "0"};
+const EXP_TAB  = {name: "Expenses",     gid: "147368676"};
+const MONTHLY_DUE = 100;           // used only when a cell says "paid"/"✓" instead of an amount
+const SAVINGS_ROW = /^additional\s+savings?$/i;   // matched against the Name column (not a teacher)
+/* ================== */
+const SNAPSHOT = {"updated": "Sep 25, 2026", "fund": [["Name", "July", "August", "September", "October", "November", "December"], ["Donna Amarillo", "100", "100", "100", "", "", ""], ["Marian Feranco", "100", "100", "100", "", "", ""], ["Rosela Caldeo", "100", "", "", "", "", ""], ["Jesse Kent Vincent Bernada", "100", "100", "100", "", "", ""], ["Dreamy Dondiego", "100", "100", "", "", "", ""], ["Eliosa Bendo", "100", "100", "100", "", "", ""], ["Angely Daliva", "100", "100", "", "", "", ""], ["Gloria Abella", "100", "100", "100", "", "", ""], ["Arlene Lasangue", "100", "100", "", "", "", ""], ["Raymart Valbarez", "100", "100", "", "", "", ""], ["John Eduard Caldeo", "100", "100", "", "", "", ""], ["Cristine Alovera", "100", "100", "100", "", "", ""], ["Rocelyn Doronio", "100", "100", "100", "100", "100", "100"], ["Rosame Danos", "", "", "", "", "", ""], ["Joana", "100", "100", "", "", "", ""], ["", "", "", "", "", "", ""], ["Additional Savings", "2500", "", "", "", "", ""]], "expenses": [["Date", "Description", "Amount"], ["July 15, 2026", "Monthly Mass", "700"], ["August 14, 2026", "Funeral Contribution", "1000"], ["August 19, 2026", "Monthly Mass", "1000"], ["August 27, 2026", "Funeral Contribution", "500"], ["Sept. 11, 2026", "Funeral Contribution", "1000"]]};   // fallback copy embedded at build time (raw rows, same shape as CSV)
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// Peso sign as inline SVG (U+20B1 is missing from some phone fonts).
+const PESO_HTML = '<svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>';
+const peso = v => PESO_HTML + (v < 0 ? "-" : "") + Math.abs(v).toLocaleString("en-PH", {minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2});
+const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ñ]+/g, " ").trim();
+const CHECK = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+
+function parseCSV(text){
+  text = text.replace(/^\uFEFF/, "");
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){
+      if (c === '"'){ if (text[i+1] === '"'){ f += '"'; i++; } else q = false; }
+      else f += c;
+    } else if (c === '"') q = true;
+    else if (c === ","){ row.push(f); f = ""; }
+    else if (c === "\n" || c === "\r"){
+      if (c === "\r" && text[i+1] === "\n") i++;
+      row.push(f); rows.push(row); row = []; f = "";
+    } else f += c;
+  }
+  if (f !== "" || row.length){ row.push(f); rows.push(row); }
+  return rows.map(r => r.map(x => x.trim()));
+}
+function toNumber(v){
+  const t = String(v ?? "").replace(/[\u20B1,\s]|PHP|Php|php|^P(?=\d)/g, "");
+  return (t !== "" && /^-?\d+(\.\d+)?$/.test(t)) ? parseFloat(t) : null;
+}
+// Amount in a month cell: number, blank (unpaid), or a "paid"-type mark.
+function cellAmount(v){
+  const s = String(v ?? "").trim();
+  if (!s) return 0;
+  const n = toNumber(s);
+  if (n !== null) return n;
+  return /^(paid|yes|y|x|✓|✔|ok)$/i.test(s) ? MONTHLY_DUE : 0;
+}
+const monthIndex = h => { const k = norm(h).slice(0, 3); return MONTHS.indexOf(k); };
+
+function parseFund(rows){
+  rows = rows.filter(r => r.some(x => x !== ""));
+  if (!rows.length) throw new Error("Monthly Fund tab is empty");
+  let hi = rows.findIndex(r => /^name/i.test(r[0] || ""));
+  if (hi < 0) hi = 0;
+  const H = rows[hi];
+  const cols = [];
+  for (let j = 1; j < H.length; j++) if ((H[j] || "").trim()) cols.push({j, label: H[j].trim()});
+  if (!cols.length) throw new Error("no month columns in header");
+  const teachers = [], savings = cols.map(() => 0);
+  for (const r of rows.slice(hi + 1)){
+    const name = (r[0] || "").trim();
+    if (!name) continue;
+    const amts = cols.map(c => cellAmount(r[c.j]));
+    if (SAVINGS_ROW.test(name.replace(/\s+/g, " "))) amts.forEach((a, i) => savings[i] += a);
+    else teachers.push({name, amts});
+  }
+  return {months: cols.map(c => c.label), teachers, savings};
+}
+function fmtDate(s){
+  s = String(s || "").trim();
+  if (!s) return {text: "", t: Infinity};
+  if (/^\d{5}(\.\d+)?$/.test(s)){ // spreadsheet serial number
+    const d = new Date(Date.UTC(1899, 11, 30) + parseFloat(s) * 864e5);
+    return {text: d.toLocaleDateString("en-US", {month: "short", day: "numeric", year: "numeric", timeZone: "UTC"}), t: d.getTime()};
+  }
+  const m = s.match(/^([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(\d{4})$/);
+  let d = null;
+  if (m && MONTHS.includes(m[1].toLowerCase())) d = new Date(Date.UTC(+m[3], MONTHS.indexOf(m[1].toLowerCase()), +m[2]));
+  else if (/^\d{4}-\d{1,2}-\d{1,2}/.test(s)) { const p = s.split(/[-T ]/); d = new Date(Date.UTC(+p[0], p[1]-1, +p[2])); }
+  else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) { const p = s.split("/"); d = new Date(Date.UTC(+p[2], p[0]-1, +p[1])); }
+  if (!d || isNaN(d)) return {text: s, t: Infinity};
+  return {text: d.toLocaleDateString("en-US", {month: "short", day: "numeric", year: "numeric", timeZone: "UTC"}), t: d.getTime()};
+}
+function parseExpenses(rows){
+  rows = rows.filter(r => r.some(x => x !== ""));
+  let di = 0, si = 1, ai = 2, start = 0;
+  const hi = rows.findIndex(r => r.some(x => /^(amount|description)/i.test(x)));
+  if (hi >= 0){
+    const H = rows[hi].map(x => x.toLowerCase());
+    const f = re => H.findIndex(x => re.test(x));
+    if (f(/^date/) >= 0) di = f(/^date/);
+    if (f(/^(desc|particular|item|purpose)/) >= 0) si = f(/^(desc|particular|item|purpose)/);
+    if (f(/^amount/) >= 0) ai = f(/^amount/);
+    start = hi + 1;
+  }
+  const out = [];
+  for (const r of rows.slice(start)){
+    const desc = (r[si] || "").trim(), amt = toNumber(r[ai]);
+    if (!desc && amt === null) continue;
+    const d = fmtDate(r[di]);
+    out.push({date: d.text, t: d.t, desc, amount: amt || 0});
+  }
+  return out;
+}
+
+const q = document.getElementById("q"), res = document.getElementById("results");
+const tog = document.getElementById("tog"), allWrap = document.getElementById("allWrap"), all = document.getElementById("all");
+const sel = document.getElementById("month"), status = document.getElementById("status");
+let F = null, E = [];
+// Today in Asia/Manila
+const nowPH = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+const curMonth = nowPH.getMonth();
+const isFuture = label => { const i = monthIndex(label); return i >= 0 && i > curMonth; };
+
+function teacherHTML(t){
+  const total = t.amts.reduce((a, b) => a + b, 0);
+  const paidN = t.amts.filter(a => a > 0).length;
+  const rows = F.months.map((m, i) => {
+    const a = t.amts[i];
+    const b = a > 0 ? `<span class="badge">${CHECK} Paid ${peso(a)}</span>`
+      : isFuture(m) ? '<span class="badge soon">Not yet paid</span>' : '<span class="badge no">Not yet paid</span>';
+    return `<div class="mrow${a > 0 || !isFuture(m) ? "" : " future"}"><span>${esc(m)}</span>${b}</div>`;
+  }).join("");
+  return `<div class="tcard"><div class="th"><div class="nm">${esc(t.name)}</div><div class="tot">Total paid: <b>${peso(total)}</b><br>${paidN} of ${F.months.length} months</div></div>${rows}</div>`;
+}
+function search(){
+  const t = norm(q.value);
+  if (t.length < 2) { res.innerHTML = ""; return; }
+  const words = t.split(" ");
+  const hits = F.teachers.filter(r => { const n = norm(r.name), c = n.replace(/ /g, ""); return words.every(w => n.includes(w) || c.includes(w)); });
+  res.innerHTML = hits.length ? hits.map(teacherHTML).join("")
+    : `<div class="empty">No teacher named “${esc(q.value)}” on the list. Check the spelling, or message the fund treasurer.</div>`;
+}
+function renderMonth(){
+  const i = +sel.value;
+  if (!F.months.length) return;
+  const sorted = [...F.teachers].sort((a, b) => a.name.localeCompare(b.name));
+  const paid = sorted.filter(t => t.amts[i] > 0), unpaid = sorted.filter(t => !(t.amts[i] > 0));
+  const coll = paid.reduce((a, t) => a + t.amts[i], 0);
+  document.getElementById("mCounts").innerHTML = `<b>${paid.length}</b> paid · <b>${unpaid.length}</b> not yet paid · ${peso(coll)} collected in ${esc(F.months[i])}`;
+  const line = (t, ok) => `<div class="row"><div class="nm">${esc(t.name)}</div>${ok ? `<span class="badge">${CHECK} Paid ${peso(t.amts[i])}</span>` : '<span class="badge no">Not yet paid</span>'}</div>`;
+  all.innerHTML = `<div class="grp ok">Paid (${paid.length})</div>` + (paid.map(t => line(t, true)).join("") || '<div class="hint">No payments recorded yet.</div>')
+    + `<div class="grp no">Not yet paid (${unpaid.length})</div>` + (unpaid.map(t => line(t, false)).join("") || '<div class="hint">Everyone has paid!</div>');
+}
+function render(){
+  const dues = F.teachers.reduce((a, t) => a + t.amts.reduce((x, y) => x + y, 0), 0);
+  const sav = F.savings.reduce((a, b) => a + b, 0);
+  const exp = E.reduce((a, e) => a + e.amount, 0);
+  const bal = dues + sav - exp;
+  document.getElementById("sDues").innerHTML = peso(dues);
+  document.getElementById("sSav").innerHTML = peso(sav);
+  document.getElementById("sInc").innerHTML = peso(dues + sav);
+  document.getElementById("sExp").innerHTML = peso(exp);
+  document.getElementById("sBal").innerHTML = peso(bal);
+  document.getElementById("balBox").classList.toggle("neg", bal < 0);
+  // month selector: keep user's choice, else ?m=, else current month (Asia/Manila), else latest month with payments
+  const prev = sel.options.length ? sel.options[sel.selectedIndex].text : null;
+  sel.innerHTML = F.months.map((m, i) => `<option value="${i}">${esc(m)}</option>`).join("");
+  let idx = prev ? F.months.indexOf(prev) : -1;
+  const pm = P.get("m");
+  if (idx < 0 && pm) idx = F.months.findIndex(m => monthIndex(m) === monthIndex(pm) && monthIndex(pm) >= 0);
+  if (idx < 0) idx = F.months.findIndex(m => monthIndex(m) === curMonth);
+  if (idx < 0) { for (let i = F.months.length - 1; i >= 0; i--) if (F.teachers.some(t => t.amts[i] > 0)) { idx = i; break; } }
+  sel.value = String(Math.max(0, idx));
+  renderMonth();
+  const ex = [...E].sort((a, b) => a.t - b.t);
+  document.getElementById("exp").innerHTML = ex.length ? `<table><thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th></tr></thead><tbody>`
+    + ex.map(e => `<tr><td class="dt">${esc(e.date || "—")}</td><td>${esc(e.desc || "—")}</td><td class="num">${peso(e.amount)}</td></tr>`).join("")
+    + `</tbody><tfoot><tr><td colspan="2">Total</td><td class="num">${peso(exp)}</td></tr></tfoot></table>` : '<div class="hint">No expenses recorded yet.</div>';
+  search();
+}
+const P = new URLSearchParams(location.search);
+q.addEventListener("input", search);
+sel.addEventListener("change", renderMonth);
+tog.addEventListener("click", () => { allWrap.hidden = !allWrap.hidden; tog.textContent = allWrap.hidden ? "Show list" : "Hide list"; });
+if (P.get("q")) q.value = P.get("q");
+if (P.get("all") === "1" || P.get("m")) tog.click();
+
+function useSnapshot(){ F = parseFund(SNAPSHOT.fund); E = parseExpenses(SNAPSHOT.expenses); render(); }
+const fallbackNote = why => { status.innerHTML = `Last updated: <b>${esc(SNAPSHOT.updated)}</b>` + (why ? `<br><span class="note">${esc(why)}</span>` : ""); };
+useSnapshot();
+
+// Live data: the sheet must be shared "Anyone with the link can view".
+// 1st choice: /export?format=csv&gid=… (exact cell text, no type guessing).
+// 2nd choice: /gviz/tq?tqx=out:csv&sheet=<name> (works by tab name, but may blank out cells whose type differs from the rest of the column).
+const bust = () => "_=" + Date.now();
+const urlsFor = tab => [
+  tab.gid !== "" ? `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${tab.gid}&${bust()}` : null,
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab.name)}&${bust()}`
+].filter(Boolean);
+async function getCSV(tab){
+  let last;
+  for (const url of urlsFor(tab)){
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const r = await fetch(url, {cache: "no-store", signal: ctl.signal});
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const txt = await r.text();
+      if (/^\s*<(!doctype|html)/i.test(txt)) throw new Error("got HTML, not CSV (is the sheet shared?)");
+      return parseCSV(txt);
+    } catch (e) { last = e; console.warn("Sheet fetch failed:", url, e); }
+    finally { clearTimeout(timer); }
+  }
+  throw last;
+}
+if (SHEET_ID){
+  status.innerHTML = '<span class="note">Loading latest data from the sheet…</span>';
+  Promise.all([getCSV(FUND_TAB), getCSV(EXP_TAB)]).then(([fr, er]) => {
+    const f = parseFund(fr), e = parseExpenses(er);
+    if (!f.teachers.length) throw new Error("no teachers in sheet");
+    F = f; E = e; render();
+    const t = new Date().toLocaleString("en-PH", {timeZone: "Asia/Manila", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit"});
+    status.innerHTML = `<span class="live"></span> Data loaded live from the sheet at <b>${esc(t)}</b>`;
+    document.documentElement.dataset.source = "live";
+  }).catch(e => {
+    console.warn("Live sheet load failed:", e);
+    fallbackNote("Couldn't reach the live sheet — showing the saved copy.");
+    document.documentElement.dataset.source = "snapshot";
+  });
+} else fallbackNote("");
+</script>
+</body>
+</html>

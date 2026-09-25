@@ -62,6 +62,28 @@
   #status{margin-bottom:6px}
   .yellow{height:4px;background:var(--brand2);border-radius:4px;width:60px;margin:10px auto 0}
   .peso{display:inline-block;width:.62em;height:.72em;margin-right:.04em;vertical-align:baseline;overflow:visible}
+  .gcash-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;font-size:1.1rem;padding:15px;border-radius:14px;background:#007DFE;color:#fff;box-shadow:0 6px 16px rgba(0,125,254,.30);margin-bottom:14px}
+  .gcash-btn:active{transform:scale(.98)}
+  .gcash-btn .g{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#fff;color:#007DFE;font-weight:800}
+  .gcash-btn.sm{font-size:.95rem;padding:10px;border-radius:0;margin:0;box-shadow:none}
+  .gcash-btn.sm .g{width:22px;height:22px;font-size:.85rem}
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(15,23,42,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px 12px;-webkit-overflow-scrolling:touch}
+  .modal[hidden]{display:none}
+  .sheet{position:relative;background:#fff;border-radius:18px;max-width:440px;width:100%;padding:18px 18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .sheet h2{margin:0 36px 4px 0;font-size:1.2rem;color:#007DFE}
+  .sheet .x{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;padding:0;background:#eef4ff;color:#1f2937;font-size:1.3rem;line-height:1}
+  .qrwrap{background:#0060e8;border-radius:14px;padding:10px;text-align:center;margin:10px 0}
+  .qrcrop{max-width:340px;margin:0 auto;aspect-ratio:907/1171;overflow:hidden;border-radius:10px}
+  .qrcrop img{display:block;width:119.07%;max-width:none;height:auto;margin:-41.24% 0 0 -9.48%}
+  .payinfo{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.95rem;margin:8px 0 12px}
+  .payinfo dt{color:var(--muted)}
+  .payinfo dd{margin:0;font-weight:700}
+  .dl{display:block;text-align:center;text-decoration:none;font-weight:700;background:#007DFE;color:#fff;border-radius:12px;padding:12px;margin-bottom:12px}
+  .steps{margin:0 0 10px;padding-left:22px;font-size:.92rem}
+  .steps li{margin-bottom:6px}
+  .paynote{background:#eef6ff;color:#0b4fa8;border-radius:10px;padding:10px 12px;font-size:.88rem}
+  .nw{white-space:nowrap}
+  .close2{width:100%;margin-top:12px}
 </style>
 </head>
 <body>
@@ -78,6 +100,7 @@
     <div class="hint">Search by first name or surname to see your monthly payments.</div>
     <div id="results"></div>
   </div>
+  <button id="payBtn" class="gcash-btn payOpen" type="button" aria-haspopup="dialog"><span class="g">G</span><span>Pay via GCash (<svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>100/month)</span></button>
   <div class="card">
     <h2>Fund summary</h2>
     <div class="summary">
@@ -101,6 +124,26 @@
     <div id="exp"></div>
   </div>
 </main>
+<div id="payModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="sheet">
+    <button class="x" id="payX" type="button" aria-label="Close">×</button>
+    <h2 id="payTitle">Pay via GCash</h2>
+    <div class="qrwrap"><div class="qrcrop"><img src="gcash-qr.png" alt="GCash InstaPay QR code for RA****T V. (enter the amount yourself)" width="1080" height="2081" loading="lazy"></div></div>
+    <dl class="payinfo">
+      <dt>Amount</dt><dd><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>100 per month</dd>
+      <dt>Recipient</dt><dd>RA****T V.</dd>
+    </dl>
+    <a class="dl" href="gcash-qr.png" download="GCash-QR-Teachers-Monthly-Contribution.png"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v9M4 7.5L8 11.5 12 7.5M3 14h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Save QR image</a>
+    <ol class="steps">
+      <li>Save the QR (or screenshot it).</li>
+      <li>Open GCash, tap <b>“Pay QR”</b> / QR, then upload the image from your gallery (or scan it from another phone).</li>
+      <li>This QR has <b>no fixed amount</b> — type the amount yourself: <b><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>100 per month</b> (e.g. <span class="nw"><svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>200</span> for two months), then screenshot your receipt.</li>
+      <li>Send the receipt to the fund treasurer / Raymart with <b>your name and the month(s) you paid</b> so the record can be updated.</li>
+    </ol>
+    <div class="paynote">Your payment will show as “Paid” on this page once it's recorded in the sheet.</div>
+    <button class="secondary close2" id="payClose" type="button">Close</button>
+  </div>
+</div>
 <footer><div id="status">Last updated: <b>Sep 25, 2026</b></div>Paid but not marked yet? Please message the fund treasurer so the record can be updated.</footer>
 <script>
 /* ===== CONFIG ===== */
@@ -114,7 +157,7 @@ const SNAPSHOT = {"updated": "Sep 25, 2026", "fund": [["Name", "July", "August",
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 // Peso sign as inline SVG (U+20B1 is missing from some phone fonts).
 const PESO_HTML = '<svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>';
-const peso = v => PESO_HTML + (v < 0 ? "-" : "") + Math.abs(v).toLocaleString("en-PH", {minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2});
+const peso = v => '<span class="nw">' + PESO_HTML + (v < 0 ? "-" : "") + Math.abs(v).toLocaleString("en-PH", {minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2}) + "</span>";
 const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ñ]+/g, " ").trim();
 const CHECK = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
@@ -225,7 +268,9 @@ function teacherHTML(t){
       : isFuture(m) ? '<span class="badge soon">Not yet paid</span>' : '<span class="badge no">Not yet paid</span>';
     return `<div class="mrow${a > 0 || !isFuture(m) ? "" : " future"}"><span>${esc(m)}</span>${b}</div>`;
   }).join("");
-  return `<div class="tcard"><div class="th"><div class="nm">${esc(t.name)}</div><div class="tot">Total paid: <b>${peso(total)}</b><br>${paidN} of ${F.months.length} months</div></div>${rows}</div>`;
+  const due = F.months.filter((m, i) => !(t.amts[i] > 0) && !isFuture(m)).length;
+  const pay = due ? `<button class="gcash-btn sm payOpen" type="button" aria-haspopup="dialog"><span class="g">G</span><span>Pay via GCash · ${due} month${due > 1 ? "s" : ""} due (${peso(due * MONTHLY_DUE)})</span></button>` : "";
+  return `<div class="tcard"><div class="th"><div class="nm">${esc(t.name)}</div><div class="tot">Total paid: <b>${peso(total)}</b><br>${paidN} of ${F.months.length} months</div></div>${rows}${pay}</div>`;
 }
 function search(){
   const t = norm(q.value);
@@ -277,6 +322,16 @@ const P = new URLSearchParams(location.search);
 q.addEventListener("input", search);
 sel.addEventListener("change", renderMonth);
 tog.addEventListener("click", () => { allWrap.hidden = !allWrap.hidden; tog.textContent = allWrap.hidden ? "Show list" : "Hide list"; });
+const payModal = document.getElementById("payModal");
+let payOpener = null;
+function openPay(){ payOpener = document.activeElement; payModal.hidden = false; document.body.style.overflow = "hidden"; document.getElementById("payX").focus(); }
+function closePay(){ payModal.hidden = true; document.body.style.overflow = ""; (payOpener && document.contains(payOpener) ? payOpener : document.getElementById("payBtn")).focus(); }
+document.addEventListener("click", e => { if (e.target.closest(".payOpen")) openPay(); });
+document.getElementById("payX").addEventListener("click", closePay);
+document.getElementById("payClose").addEventListener("click", closePay);
+payModal.addEventListener("click", e => { if (e.target === payModal) closePay(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !payModal.hidden) closePay(); });
+if (P.get("pay") === "1") openPay();
 if (P.get("q")) q.value = P.get("q");
 if (P.get("all") === "1" || P.get("m")) tog.click();
 

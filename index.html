@@ -171,7 +171,7 @@
     <button class="secondary close2" id="payClose" type="button">Close</button>
   </div>
 </div>
-<footer><div id="status">Last updated: <b>Sep 25, 2026</b></div>Paid but not marked yet? Please message the fund treasurer so the record can be updated.</footer>
+<footer><div id="status">Last updated: <b>Nov 16, 2026</b></div>Paid but not marked yet? Please message the fund treasurer so the record can be updated.</footer>
 <script>
 /* ===== CONFIG ===== */
 const SHEET_ID = "1Wra7x6_QotWRg4azHE70QnovT8BWS6tnr7NMPBPWylo";
@@ -181,7 +181,7 @@ const REF_API_URL = "https://script.google.com/macros/s/AKfycbxoQ9yn3pF0YEN6eJqa
 const MONTHLY_DUE = 100;           // used only when a cell says "paid"/"✓" instead of an amount
 const SAVINGS_ROW = /^additional\s+savings?$/i;   // matched against the Name column (not a teacher)
 /* ================== */
-const SNAPSHOT = {"updated": "Sep 25, 2026", "fund": [["Name", "July", "August", "September", "October", "November", "December"], ["Donna Amarillo", "100", "100", "100", "", "", ""], ["Marian Feranco", "100", "100", "100", "", "", ""], ["Rosela Caldeo", "100", "", "", "", "", ""], ["Jesse Kent Vincent Bernada", "100", "100", "100", "", "", ""], ["Dreamy Dondiego", "100", "100", "", "", "", ""], ["Eliosa Bendo", "100", "100", "100", "", "", ""], ["Angely Daliva", "100", "100", "", "", "", ""], ["Gloria Abella", "100", "100", "100", "", "", ""], ["Arlene Lasangue", "100", "100", "", "", "", ""], ["Raymart Valbarez", "100", "100", "", "", "", ""], ["John Eduard Caldeo", "100", "100", "", "", "", ""], ["Cristine Alovera", "100", "100", "100", "", "", ""], ["Rocelyn Doronio", "100", "100", "100", "100", "100", "100"], ["Rosame Danos", "", "", "", "", "", ""], ["Joana", "100", "100", "", "", "", ""], ["", "", "", "", "", "", ""], ["Additional Savings", "2500", "", "", "", "", ""]], "expenses": [["Date", "Description", "Amount"], ["July 15, 2026", "Monthly Mass", "700"], ["August 14, 2026", "Funeral Contribution", "1000"], ["August 19, 2026", "Monthly Mass", "1000"], ["August 27, 2026", "Funeral Contribution", "500"], ["Sept. 11, 2026", "Funeral Contribution", "1000"]]};   // fallback copy embedded at build time (raw rows, same shape as CSV)
+const SNAPSHOT = {"updated": "Nov 16, 2026", "fund": [["Name", "July", "August", "September", "October", "November", "December", "January", "February", "March", "April"], ["Donna Amarillo", "100", "100", "100", "100", "", "", "", "", "", ""], ["Marian Feranco", "100", "100", "100", "100", "100", "100", "", "", "", ""], ["Rosela Caldeo", "100", "", "", "", "", "", "", "", "", ""], ["Jesse Kent Vincent Bernada", "100", "100", "100", "", "", "", "", "", "", ""], ["Dreamy Dondiego", "100", "100", "100", "100", "", "", "", "", "", ""], ["Eliosa Bendo", "100", "100", "100", "100", "100", "100", "", "", "", ""], ["Angely Daliva", "100", "100", "100", "100", "", "", "", "", "", ""], ["Gloria Abella", "100", "100", "100", "100", "100", "100", "", "", "", ""], ["Arlene Lasangue", "100", "100", "100", "100", "", "", "", "", "", ""], ["Raymart Valbarez", "100", "100", "100", "100", "100", "100", "", "", "", ""], ["John Eduard Caldeo", "100", "100", "100", "100", "100", "", "", "", "", ""], ["Cristine Alovera", "100", "100", "100", "100", "", "", "", "", "", ""], ["Rocelyn Doronio", "100", "100", "100", "100", "100", "100", "", "", "", ""], ["Rosame Danos", "100", "100", "100", "100", "100", "", "", "", "", ""], ["Joana", "100", "100", "100", "100", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", "", "", ""], ["Additional Savings", "2000", "200", "", "", "", "", "", "", "", ""]], "expenses": [["Date", "Description", "Amount"], ["July 15, 2026", "Monthly Mass", "1000"], ["August 14, 2026", "Funeral Contribution", "1000"], ["August 19, 2026", "Monthly Mass", "1000"], ["August 27, 2026", "Funeral Contribution", "500"], ["Sept. 11, 2026", "Funeral Contribution", "1000"], ["Sept. 28, 2026", "Sir Jess Sublimation", "500"], ["Sept 30,2026", "Monthly Mass", "1000"], ["Oct. 14,2026", "Loctugan Mass", "1000"], ["Oct. 28", "School Mass", "700"]]};   // fallback copy embedded at build time (raw rows, same shape as CSV)
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 // Peso sign as inline SVG (U+20B1 is missing from some phone fonts).
 const PESO_HTML = '<svg class="peso" viewBox="0 0 13 18" role="img" aria-label="PHP" focusable="false"><path d="M3.6 18V1h4.3a4.4 4.4 0 0 1 0 8.8H3.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M0.6 4.3h12M0.6 6.9h12" stroke="currentColor" stroke-width="1.3"/></svg>';
@@ -221,6 +221,18 @@ function cellAmount(v){
   return /^(paid|yes|y|x|✓|✔|ok)$/i.test(s) ? MONTHLY_DUE : 0;
 }
 const monthIndex = h => { const k = norm(h).slice(0, 3); return MONTHS.indexOf(k); };
+// School year starts July 2026; year increments when the month index wraps lower than the previous column (Dec → Jan).
+function monthYears(labels){
+  let year = 2026, prev = -1;
+  return labels.map(label => {
+    const i = monthIndex(label);
+    if (i >= 0){
+      if (prev >= 0 && i < prev) year++;
+      prev = i;
+    }
+    return year;
+  });
+}
 
 function parseFund(rows){
   rows = rows.filter(r => r.some(x => x !== ""));
@@ -239,7 +251,8 @@ function parseFund(rows){
     if (SAVINGS_ROW.test(name.replace(/\s+/g, " "))) amts.forEach((a, i) => savings[i] += a);
     else teachers.push({name, amts});
   }
-  return {months: cols.map(c => c.label), teachers, savings};
+  const months = cols.map(c => c.label);
+  return {months, years: monthYears(months), teachers, savings};
 }
 function fmtDate(s){
   s = String(s || "").trim();
@@ -284,8 +297,14 @@ const sel = document.getElementById("month"), status = document.getElementById("
 let F = null, E = [];
 // Today in Asia/Manila
 const nowPH = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"}));
-const curMonth = nowPH.getMonth();
-const isFuture = label => { const i = monthIndex(label); return i >= 0 && i > curMonth; };
+const curMonth = nowPH.getMonth(), curYear = nowPH.getFullYear();
+// A month is future if its (year, month index) is after today in Asia/Manila.
+const isFuture = i => {
+  const mi = monthIndex(F.months[i]);
+  if (mi < 0) return false;
+  const y = F.years[i];
+  return y > curYear || (y === curYear && mi > curMonth);
+};
 
 function teacherHTML(t){
   const total = t.amts.reduce((a, b) => a + b, 0);
@@ -293,10 +312,10 @@ function teacherHTML(t){
   const rows = F.months.map((m, i) => {
     const a = t.amts[i];
     const b = a > 0 ? `<span class="badge">${CHECK} Paid ${peso(a)}</span>`
-      : isFuture(m) ? '<span class="badge soon">Not yet paid</span>' : '<span class="badge no">Not yet paid</span>';
-    return `<div class="mrow${a > 0 || !isFuture(m) ? "" : " future"}"><span>${esc(m)}</span>${b}</div>`;
+      : isFuture(i) ? '<span class="badge soon">Not yet paid</span>' : '<span class="badge no">Not yet paid</span>';
+    return `<div class="mrow${a > 0 || !isFuture(i) ? "" : " future"}"><span>${esc(m)}</span>${b}</div>`;
   }).join("");
-  const due = F.months.filter((m, i) => !(t.amts[i] > 0) && !isFuture(m)).length;
+  const due = F.months.filter((m, i) => !(t.amts[i] > 0) && !isFuture(i)).length;
   const pay = due ? `<button class="gcash-btn sm payOpen" type="button" aria-haspopup="dialog" data-teacher="${esc(t.name)}"><span class="g">G</span><span>Pay via GCash · ${due} month${due > 1 ? "s" : ""} due (${peso(due * MONTHLY_DUE)})</span></button>` : "";
   return `<div class="tcard"><div class="th"><div class="nm">${esc(t.name)}</div><div class="tot">Total paid: <b>${peso(total)}</b><br>${paidN} of ${F.months.length} months</div></div>${rows}${pay}</div>`;
 }
@@ -336,7 +355,7 @@ function render(){
   let idx = prev ? F.months.indexOf(prev) : -1;
   const pm = P.get("m");
   if (idx < 0 && pm) idx = F.months.findIndex(m => monthIndex(m) === monthIndex(pm) && monthIndex(pm) >= 0);
-  if (idx < 0) idx = F.months.findIndex(m => monthIndex(m) === curMonth);
+  if (idx < 0) idx = F.months.findIndex((m, i) => monthIndex(m) === curMonth && F.years[i] === curYear);
   if (idx < 0) { for (let i = F.months.length - 1; i >= 0; i--) if (F.teachers.some(t => t.amts[i] > 0)) { idx = i; break; } }
   sel.value = String(Math.max(0, idx));
   renderMonth();

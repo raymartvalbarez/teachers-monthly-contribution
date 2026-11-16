@@ -84,6 +84,18 @@
   .paynote{background:#eef6ff;color:#0b4fa8;border-radius:10px;padding:10px 12px;font-size:.88rem}
   .nw{white-space:nowrap}
   .close2{width:100%;margin-top:12px}
+  .refform{border:2px solid #d5e6ff;border-radius:14px;padding:12px;margin-top:14px;background:#f7fbff}
+  .refform h3{margin:0 0 6px;font-size:1rem;color:#0b4fa8}
+  .refform label{font-size:.85rem;margin:10px 0 4px}
+  .refform select,.refform input[type=text]{width:100%;font-size:1rem;padding:10px 12px;border:2px solid #d5deea;border-radius:10px;background:#fff;color:var(--ink)}
+  .mchecks{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.95rem}
+  .mchecks label{font-weight:500;margin:0;display:flex;align-items:center;gap:6px}
+  .reftotal{font-size:.9rem;margin-top:8px;color:var(--muted)}
+  .refbtn{width:100%;margin-top:12px;padding:12px;border-radius:12px}
+  .refbtn[disabled]{opacity:.6;cursor:wait}
+  .referr{color:var(--bad);font-size:.88rem;margin-top:8px}
+  .refok{background:var(--okbg);color:var(--ok);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:.92rem}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 </style>
 </head>
 <body>
@@ -141,6 +153,21 @@
       <li>Send the receipt to the fund treasurer / Raymart with <b>your name and the month(s) you paid</b> so the record can be updated.</li>
     </ol>
     <div class="paynote">Your payment will show as “Paid” on this page once it's recorded in the sheet.</div>
+    <form class="refform" id="refForm" hidden novalidate>
+      <h3>Already paid? Submit your reference number</h3>
+      <div class="hint" style="margin-top:0">After paying with the QR above, send your GCash <b>Ref No.</b> here. It will show as “Paid” once the treasurer confirms it.</div>
+      <label for="refWho">Your name</label><select id="refWho"></select>
+      <label>Month(s) you paid</label><div class="mchecks" id="refMonths"></div>
+      <div class="reftotal" id="refTotal"></div>
+      <label for="refNo">GCash Ref No. (from your receipt)</label>
+      <input type="text" id="refNo" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="e.g. 1234 567 890123">
+      <label for="refLast4">Last 4 digits of your GCash number (optional)</label>
+      <input type="text" id="refLast4" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="e.g. 1234">
+      <div class="hp" aria-hidden="true"><label for="refSite">Website</label><input type="text" id="refSite" tabindex="-1" autocomplete="off"></div>
+      <button class="refbtn" id="refGo" type="submit">Submit reference number</button>
+      <div class="referr" id="refErr" role="alert"></div>
+      <div class="refok" id="refOk" hidden role="status"></div>
+    </form>
     <button class="secondary close2" id="payClose" type="button">Close</button>
   </div>
 </div>
@@ -150,6 +177,7 @@
 const SHEET_ID = "1Wra7x6_QotWRg4azHE70QnovT8BWS6tnr7NMPBPWylo";
 const FUND_TAB = {name: "Monthly Fund", gid: "0"};
 const EXP_TAB  = {name: "Expenses",     gid: "147368676"};
+const REF_API_URL = "https://script.google.com/macros/s/AKfycbxoQ9yn3pF0YEN6eJqalAyITmQekadpgXSXI5RbtMaSQ57R4_ssyXaI0SDAhnWuIpOUeg/exec";           // Apps Script web app URL (…/exec). Leave "" to hide the reference-number form.
 const MONTHLY_DUE = 100;           // used only when a cell says "paid"/"✓" instead of an amount
 const SAVINGS_ROW = /^additional\s+savings?$/i;   // matched against the Name column (not a teacher)
 /* ================== */
@@ -269,7 +297,7 @@ function teacherHTML(t){
     return `<div class="mrow${a > 0 || !isFuture(m) ? "" : " future"}"><span>${esc(m)}</span>${b}</div>`;
   }).join("");
   const due = F.months.filter((m, i) => !(t.amts[i] > 0) && !isFuture(m)).length;
-  const pay = due ? `<button class="gcash-btn sm payOpen" type="button" aria-haspopup="dialog"><span class="g">G</span><span>Pay via GCash · ${due} month${due > 1 ? "s" : ""} due (${peso(due * MONTHLY_DUE)})</span></button>` : "";
+  const pay = due ? `<button class="gcash-btn sm payOpen" type="button" aria-haspopup="dialog" data-teacher="${esc(t.name)}"><span class="g">G</span><span>Pay via GCash · ${due} month${due > 1 ? "s" : ""} due (${peso(due * MONTHLY_DUE)})</span></button>` : "";
   return `<div class="tcard"><div class="th"><div class="nm">${esc(t.name)}</div><div class="tot">Total paid: <b>${peso(total)}</b><br>${paidN} of ${F.months.length} months</div></div>${rows}${pay}</div>`;
 }
 function search(){
@@ -324,14 +352,57 @@ sel.addEventListener("change", renderMonth);
 tog.addEventListener("click", () => { allWrap.hidden = !allWrap.hidden; tog.textContent = allWrap.hidden ? "Show list" : "Hide list"; });
 const payModal = document.getElementById("payModal");
 let payOpener = null;
-function openPay(){ payOpener = document.activeElement; payModal.hidden = false; document.body.style.overflow = "hidden"; document.getElementById("payX").focus(); }
+function openPay(teacher){ payOpener = document.activeElement; setupRef(teacher || ""); payModal.hidden = false; document.body.style.overflow = "hidden"; document.getElementById("payX").focus(); }
 function closePay(){ payModal.hidden = true; document.body.style.overflow = ""; (payOpener && document.contains(payOpener) ? payOpener : document.getElementById("payBtn")).focus(); }
-document.addEventListener("click", e => { if (e.target.closest(".payOpen")) openPay(); });
+document.addEventListener("click", e => { const b = e.target.closest(".payOpen"); if (b) openPay(b.dataset.teacher); });
+// ---- "Already paid? Submit your reference number" (saved as PENDING; the treasurer approves it) ----
+const refForm = document.getElementById("refForm"), refWho = document.getElementById("refWho"), refMonths = document.getElementById("refMonths");
+const refTotal = document.getElementById("refTotal"), refErr = document.getElementById("refErr"), refOk = document.getElementById("refOk"), refGo = document.getElementById("refGo");
+const checkedMonths = () => [...refMonths.querySelectorAll("input:checked")].map(x => x.value);
+function refUpdateTotal(){ const n = checkedMonths().length; refTotal.innerHTML = n ? `Total: ${peso(n * MONTHLY_DUE)} for ${n} month${n > 1 ? "s" : ""}` : ""; }
+function refFillMonths(){
+  const t = F && F.teachers.find(x => x.name === refWho.value);
+  const open = t ? F.months.filter((m, i) => !(t.amts[i] > 0)) : [];
+  refMonths.innerHTML = open.map(m => `<label><input type="checkbox" value="${esc(m)}"> ${esc(m)}</label>`).join("")
+    || `<span class="hint" style="margin:0">${t ? "All months are already paid. Thank you!" : "Choose your name first."}</span>`;
+  refUpdateTotal();
+}
+function setupRef(teacher){
+  const on = !!REF_API_URL && !!F;
+  refForm.hidden = !on;
+  if (!on) return;
+  const names = F.teachers.map(t => t.name).sort((a, b) => a.localeCompare(b));
+  refWho.innerHTML = '<option value="">— choose your name —</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  refWho.value = names.includes(teacher) ? teacher : "";
+  refErr.textContent = ""; refOk.hidden = true; refGo.hidden = false;
+  refFillMonths();
+}
+refWho.addEventListener("change", refFillMonths);
+refMonths.addEventListener("change", refUpdateTotal);
+refForm.addEventListener("submit", async ev => {
+  ev.preventDefault(); refErr.textContent = "";
+  const months = checkedMonths(), ref = document.getElementById("refNo").value.replace(/[\s-]/g, ""), last4 = document.getElementById("refLast4").value.trim();
+  if (!refWho.value) { refErr.textContent = "Please choose your name."; return; }
+  if (!months.length) { refErr.textContent = "Please tick the month(s) you paid."; return; }
+  if (!/^\d{10,13}$/.test(ref)) { refErr.textContent = "Please enter the GCash Ref No. exactly as shown on your receipt (10–13 digits)."; return; }
+  if (last4 && !/^\d{4}$/.test(last4)) { refErr.textContent = "Last 4 digits must be 4 numbers (or leave it blank)."; return; }
+  refGo.disabled = true; refGo.textContent = "Submitting…";
+  try {
+    const r = await fetch(REF_API_URL, {method: "POST", headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify({action: "submit", teacher: refWho.value, months, amount: months.length * MONTHLY_DUE, ref, last4, website: document.getElementById("refSite").value})});
+    const j = await r.json();
+    if (j && j.ok) {
+      refOk.textContent = `Pending approval — thank you, ${refWho.value}! ${months.join(", ")} will show as “Paid” once the treasurer confirms your GCash Ref No. ${ref}.`;
+      refOk.hidden = false; refGo.hidden = true; document.getElementById("refNo").value = ""; document.getElementById("refLast4").value = "";
+    } else refErr.textContent = (j && typeof j.error === "string") ? j.error : "Could not submit right now. Please try again later.";
+  } catch (e) { refErr.textContent = "Couldn't connect. Please try again, or send your receipt to the fund treasurer."; }
+  refGo.disabled = false; refGo.textContent = "Submit reference number";
+});
 document.getElementById("payX").addEventListener("click", closePay);
 document.getElementById("payClose").addEventListener("click", closePay);
 payModal.addEventListener("click", e => { if (e.target === payModal) closePay(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !payModal.hidden) closePay(); });
-if (P.get("pay") === "1") openPay();
+if (P.get("pay") === "1") setTimeout(() => openPay(P.get("q") || ""), 0);   // after data is ready
 if (P.get("q")) q.value = P.get("q");
 if (P.get("all") === "1" || P.get("m")) tog.click();
 
